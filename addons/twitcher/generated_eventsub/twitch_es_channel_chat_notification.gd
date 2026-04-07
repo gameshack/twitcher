@@ -105,7 +105,7 @@ class Event extends TwitchData:
 			message = val
 			track_data(&"message", val)
 	
-	## The type of notice. Possible values are: subresubsub_giftcommunity_sub_giftgift_paid_upgradeprime_paid_upgraderaidunraidpay_it_forwardannouncementbits_badge_tiercharity_donationshared_chat_subshared_chat_resubshared_chat_sub_giftshared_chat_community_sub_giftshared_chat_gift_paid_upgradeshared_chat_prime_paid_upgradeshared_chat_raidshared_chat_pay_it_forwardshared_chat_announcement
+	## The type of notice. Possible values are: subresubsub_giftcommunity_sub_giftgift_paid_upgradeprime_paid_upgraderaidunraidpay_it_forwardannouncementbits_badge_tiercharity_donationwatch_streakshared_chat_subshared_chat_resubshared_chat_sub_giftshared_chat_community_sub_giftshared_chat_gift_paid_upgradeshared_chat_prime_paid_upgradeshared_chat_raidshared_chat_pay_it_forwardshared_chat_announcement
 	@export var notice_type: String:
 		set(val): 
 			notice_type = val
@@ -179,10 +179,16 @@ class Event extends TwitchData:
 	
 	## Information about the announcement event. Null if notice_type is not charity_donation
 	@export var charity_donation: CharityDonation:
-		set(val): 
+		set(val):
 			charity_donation = val
 			track_data(&"charity_donation", val)
-	
+
+	## Information about the Watch Streak event. Null if notice_type is not watch_streak
+	@export var watch_streak: WatchStreak:
+		set(val):
+			watch_streak = val
+			track_data(&"watch_streak", val)
+
 	## Optional. The broadcaster user ID of the channel the message was sent from. Is null when the message notification happens in the same channel as the broadcaster. Is not null when in a shared chat session, and the action happens in the channel of a participant other than the broadcaster.
 	@export var source_broadcaster_user_id: String:
 		set(val): 
@@ -320,6 +326,8 @@ class Event extends TwitchData:
 			result.bits_badge_tier = BitsBadgeTier.from_json(d["bits_badge_tier"])
 		if d.get("charity_donation", null) != null:
 			result.charity_donation = CharityDonation.from_json(d["charity_donation"])
+		if d.get("watch_streak", null) != null:
+			result.watch_streak = WatchStreak.from_json(d["watch_streak"])
 		if d.get("source_broadcaster_user_id", null) != null:
 			result.source_broadcaster_user_id = d["source_broadcaster_user_id"]
 		if d.get("source_broadcaster_user_name", null) != null:
@@ -1080,6 +1088,34 @@ class Amount extends TwitchData:
 			result.currency = d["currency"]
 		return result
 	
+
+
+## Information about the Watch Streak event. Null if notice_type is not watch_streak
+## #/components/schemas/ChannelChatNotificationEvent/WatchStreak
+class WatchStreak extends TwitchData:
+
+	## The number of consecutive broadcasts for which the user has been watching.
+	@export var streak_count: int:
+		set(val):
+			streak_count = val
+			track_data(&"streak_count", val)
+
+	## The number of channel points awarded for the Watch Streak milestone.
+	@export var channel_points_awarded: int:
+		set(val):
+			channel_points_awarded = val
+			track_data(&"channel_points_awarded", val)
+
+
+
+	static func from_json(d: Dictionary) -> WatchStreak:
+		var result: WatchStreak = WatchStreak.new()
+		if d.get("streak_count", null) != null:
+			result.streak_count = d["streak_count"]
+		if d.get("channel_points_awarded", null) != null:
+			result.channel_points_awarded = d["channel_points_awarded"]
+		return result
+
 
 
 ## Optional. The list of chat badges for the chatter in the channel the message was sent from. Is null when the message happens in the same channel as the broadcaster. Is not null when in a shared chat session, and the action happens in the channel of a participant other than the broadcaster.
